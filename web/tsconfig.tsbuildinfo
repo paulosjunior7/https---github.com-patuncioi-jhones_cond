@@ -1,0 +1,1 @@
+{"root":["./src/main.tsx","./src/vite-env.d.ts","./src/components/app.tsx","./src/hooks/usenuievent.ts","./src/providers/visibilityprovider.tsx","./src/utils/debugdata.ts","./src/utils/fetchnui.ts","./src/utils/misc.ts"],"version":"5.8.3"}
