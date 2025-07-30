@@ -1,0 +1,38 @@
+import React from 'react';
+
+interface IconUpgradesProps {
+  size?: number;
+  color?: string;
+  className?: string;
+}
+
+const IconUpgrades: React.FC<IconUpgradesProps> = ({ 
+  size = 23, 
+  color = 'currentColor', 
+  className = '' 
+}) => {
+  return (
+    <svg 
+      width={size} 
+      height={size * (20/23)} 
+      viewBox="0 0 23 20" 
+      fill="none" 
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <g clipPath="url(#clip0_70_82)">
+        <path 
+          d="M8.5 0V6H10.5V9H4.5C3.39 9 2.5 9.89 2.5 11V14H0.5V20H6.5V14H4.5V11H10.5V14H8.5V20H14.5V14H12.5V11H18.5V14H16.5V20H22.5V14H20.5V11C20.5 9.89 19.61 9 18.5 9H12.5V6H14.5V0H8.5Z" 
+          fill={color}
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_70_82">
+          <rect width="22" height="20" fill="white" transform="translate(0.5)"/>
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
+
+export default IconUpgrades; 

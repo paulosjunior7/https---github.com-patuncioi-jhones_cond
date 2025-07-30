@@ -1,0 +1,10 @@
+export { default as IconHome } from './IconHome';
+export { default as IconUser } from './IconUser';
+export { default as IconTaxas } from './IconTaxas';
+export { default as IconGarage } from './IconGarage';
+export { default as IconClothes } from './IconClothes';
+export { default as IconUpgrades } from './IconUpgrades';
+export { default as IconEye } from './IconEye';
+export { default as IconLocker } from './IconLocker';
+export { default as IconUnlocker } from './IconUnlocker';
+export { default as IconHuman } from './IconHuman'; 

@@ -1,0 +1,31 @@
+import React from 'react';
+
+interface IconHomeProps {
+  size?: number;
+  color?: string;
+  className?: string;
+}
+
+const IconHome: React.FC<IconHomeProps> = ({ 
+  size = 24, 
+  color = 'currentColor', 
+  className = '' 
+}) => {
+  return (
+    <svg 
+      width={size} 
+      height={size * (20/24)} 
+      viewBox="0 0 24 20" 
+      fill="none" 
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path 
+        d="M9.70002 18.3333V12.7778H14.3V18.3333C14.3 18.9445 14.8175 19.4445 15.45 19.4445H18.9C19.5325 19.4445 20.05 18.9445 20.05 18.3333V10.5556H22.005C22.534 10.5556 22.787 9.92224 22.3845 9.5889L12.7705 1.22224C12.3335 0.844459 11.6665 0.844459 11.2295 1.22224L1.61552 9.5889C1.22452 9.92224 1.46602 10.5556 1.99502 10.5556H3.95002V18.3333C3.95002 18.9445 4.46752 19.4445 5.10002 19.4445H8.55002C9.18252 19.4445 9.70002 18.9445 9.70002 18.3333Z" 
+        fill={color}
+      />
+    </svg>
+  );
+};
+
+export default IconHome; 
