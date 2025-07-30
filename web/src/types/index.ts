@@ -12,10 +12,12 @@ export interface Document {
 }
 
 export type TabType =
-  | "meus-documentos"
-  | "criar-documento"
-  | "aprovar-documento"
-  | "gerenciar-documentos";
+  | "dashboard"
+  | "permissoes-usuarios"
+  | "armario-virtual"
+  | "upgrades"
+  | "garagem"
+  | "taxas";
 
 export interface FormData {
   passportId: string;
@@ -33,4 +35,4 @@ export interface FormErrors {
 export interface SubmitMessage {
   type: "success" | "error";
   message: string;
-} 
+}
