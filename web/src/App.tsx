@@ -98,7 +98,7 @@ const App: React.FC = () => {
   if (loaderState.show)
     return (
       <div className="fixed inset-0 bg-white flex items-center justify-center p-4">
-        <div className="modal-cut-corners bg-[#0F0F12] w-full max-w-[80%] h-full max-h-[90vh] flex items-center justify-center">
+        <div className="modal-cut-corners bg-transparent w-full max-w-[80%] h-full max-h-[90vh] flex items-center justify-center">
           <Loader
             show={loaderState.show}
             message={loaderState.message}
@@ -108,11 +108,9 @@ const App: React.FC = () => {
       </div>
     );
 
-  // showLoader("Carregando dados...", "spinner");
-
   return (
-    <div className="fixed inset-0 bg-white flex items-center justify-center p-4">
-      <div className="modal-cut-corners bg-[#0F0F12] w-full max-w-[80%] h-full max-h-[90vh] flex flex-col overflow-hidden">
+    <div className="fixed inset-0  flex items-center justify-center p-4">
+      <div className="modal-cut-corners bg-[#0F0F12] w-full max-w-[70%] h-full max-h-[70vh] flex flex-col overflow-hidden">
         <div className="p-8 pl-12">
           <div className="flex gap-6 flex-col">
             <div className="flex items-center mt-5 justify-between">
@@ -136,7 +134,6 @@ const App: React.FC = () => {
                       ? "Taxas"
                       : ""}
                   </h2>
-                
                 </div>
               </div>
               <div className="flex items-center gap-3 flex-row justify-center">

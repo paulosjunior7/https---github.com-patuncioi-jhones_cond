@@ -30,6 +30,8 @@ export const ToastMessage: React.FC<ToastMessageProps> = ({ text, type }) => {
         <span className="text-white text-sm font-semibold">{text}</span>
       </div>,
       {
+        position: "top-right",
+        duration: 3000,
         style: {
           background:
             "linear-gradient(90deg, rgba(255, 32, 78, 0.15) 0%, rgba(255, 32, 78, 0.08) 30%, rgba(255, 32, 78, 0.02) 60%, rgba(255, 32, 78, 0) 100%), linear-gradient(0deg, rgba(34, 34, 37, 0.98), rgba(34, 34, 37, 0.98))",

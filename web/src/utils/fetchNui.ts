@@ -15,7 +15,7 @@ import { isEnvBrowser } from "./misc";
 export async function fetchNui<T = unknown>(
   eventName: string,
   data?: unknown,
-  mockData?: T,
+  mockData?: T
 ): Promise<T> {
   const options = {
     method: "post",

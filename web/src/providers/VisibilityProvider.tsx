@@ -1,20 +1,15 @@
-import React, {
-  type Context,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import type { Context } from "react";
 import { useNuiEvent } from "../hooks/useNuiEvent";
 import { fetchNui } from "../utils/fetchNui";
 import { isEnvBrowser } from "../utils/misc";
+
+const VisibilityCtx = createContext<VisibilityProviderValue | null>(null);
 
 interface VisibilityProviderValue {
   setVisible: (visible: boolean) => void;
   visible: boolean;
 }
-
-const VisibilityCtx = createContext<VisibilityProviderValue | null>(null);
 
 // This should be mounted at the top level of your application, it is currently set to
 // apply a CSS visibility value. If this is non-performant, this should be customized.
@@ -28,15 +23,14 @@ export const VisibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   // Handle pressing escape/backspace
   useEffect(() => {
     // Only attach listener when we are visible
-    if (!visible) return;
+    if (!visible) {
+      fetchNui("hideFrame");
+    }
 
     const keyHandler = (e: KeyboardEvent) => {
-      if (["Escape", "Backspace"].includes(e.code)) {
-        if (!isEnvBrowser()) {
-          fetchNui("hideFrame");
-        } else {
-          setVisible(!visible);
-        }
+      if (["Backspace", "Escape"].includes(e.code)) {
+        if (!isEnvBrowser()) fetchNui("hideFrame");
+        else setVisible(!visible);
       }
     };
 
@@ -53,7 +47,7 @@ export const VisibilityProvider: React.FC<{ children: React.ReactNode }> = ({
       }}
     >
       <div
-        style={{ visibility: visible ? "visible" : "hidden", height: "100vh" }}
+        style={{ visibility: visible ? "visible" : "hidden", height: "100%" }}
       >
         {children}
       </div>
@@ -63,5 +57,5 @@ export const VisibilityProvider: React.FC<{ children: React.ReactNode }> = ({
 
 export const useVisibility = () =>
   useContext<VisibilityProviderValue>(
-    VisibilityCtx as Context<VisibilityProviderValue>,
+    VisibilityCtx as Context<VisibilityProviderValue>
   );
