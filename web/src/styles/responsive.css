@@ -21,8 +21,6 @@
   }
 
   .modal-cut-corners {
-    max-width: 98% !important;
-    max-height: 98vh !important;
   }
 
   .app-header {
@@ -180,6 +178,8 @@
 /* Estilos específicos para o App */
 .app-modal {
   transition: all 0.3s ease-in-out;
+  height: 75vh;
+  width: 60%;
 }
 
 .app-header {
@@ -230,20 +230,7 @@
   );
 }
 
-/* Animações de entrada */
-@keyframes modalFadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
 .modal-cut-corners {
-  animation: modalFadeIn 0.2s ease-out;
 }
 
 /* Tooltip específico para resoluções pequenas */
@@ -260,6 +247,11 @@
     position: relative;
     overflow: visible !important;
   }
+}
+
+/* Corrigir problemas de container pai */
+.app-modal {
+  position: relative !important;
 }
 
 /* Ocultar barra de rolagem */

@@ -119,7 +119,6 @@ code {
 /* Modal com corte nas bordas */
 .modal-cut-corners {
   /* position: relative; */
-  background: #161619;
   border-radius: 16px;
   clip-path: polygon(
     0 40px,
@@ -215,4 +214,26 @@ code {
   shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
   z-index: -1;
   pointer-events: none;
+}
+
+/* Correções específicas para Dialog Modal Positioning */
+[data-radix-dialog-overlay] {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 50 !important;
+}
+
+[data-radix-dialog-content] {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 51 !important;
+}
+
+/* Garantir que o portal do Dialog seja renderizado corretamente */
+[data-radix-portal] {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 50 !important;
 }

@@ -257,8 +257,8 @@ export default function Upgrades() {
                     {upgrade.name}
                   </h3>
                   <p
-                    className={`text-gray-400 max-w-md md:max-w-2xl ${
-                      isSmall ? "text-xs" : "text-sm sm:text-sm md:max-w-xs"
+                    className={`text-gray-400 max-w-md  ${
+                      isSmall ? "text-xs" : "text-sm sm:text-sm"
                     }`}
                   >
                     {upgrade.upgradeMessage}

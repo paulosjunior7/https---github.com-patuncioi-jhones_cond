@@ -364,7 +364,7 @@ export default function PermissoesUsuarios() {
                       </button>
                     </DialogTrigger>
                     <DialogContent
-                      className={`p-10 modal-cut-corners ${
+                      className={`p-10 modal-cut-corners${
                         isSmall ? "sm:max-w-[350px]" : "sm:max-w-[550px]"
                       }`}
                     >
@@ -469,7 +469,7 @@ export default function PermissoesUsuarios() {
                       </button>
                     </DialogTrigger>
                     <DialogContent
-                      className={`p-10 modal-cut-corners ${
+                      className={`p-10 modal-cut-corners${
                         isSmall ? "sm:max-w-[350px]" : "sm:max-w-[425px]"
                       }`}
                     >

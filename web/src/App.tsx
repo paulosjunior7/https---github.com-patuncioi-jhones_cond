@@ -100,7 +100,7 @@ const App: React.FC = () => {
   if (loaderState.show)
     return (
       <div className="fixed inset-0 bg-white flex items-center justify-center p-2 sm:p-4">
-        <div className="modal-cut-corners bg-transparent w-full max-w-[95%] sm:max-w-[85%] lg:max-w-[80%] h-full max-h-[95vh] sm:max-h-[90vh] flex items-center justify-center">
+        <div className="modal-cut-cornersbg-transparent w-full max-w-[95%] sm:max-w-[85%] lg:max-w-[80%] h-full max-h-[95vh] sm:max-h-[90vh] flex items-center justify-center">
           <Loader
             show={loaderState.show}
             message={loaderState.message}
@@ -112,7 +112,7 @@ const App: React.FC = () => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center p-3 sm:p-4">
-      <div className="app-modal modal-cut-corners p-6 bg-[#0F0F12] w-full max-w-[98%] sm:max-w-[85%] lg:max-w-[75%] xl:max-w-[70%] h-full max-h-[95vh] sm:max-h-[80vh] lg:max-h-[75vh] xl:max-h-[70vh] flex flex-col overflow-hidden">
+      <div className="app-modal modal-cut-corners bg-[#0F0F12] w-full max-w-[98%] sm:max-w-[85%] lg:max-w-[75%] xl:max-w-[70%] h-full max-h-[95vh] sm:max-h-[80vh] lg:max-h-[75vh] xl:max-h-[70vh] flex flex-col overflow-hidden">
         <div className="p-3 sm:p-5 lg:p-6 xl:p-8 pl-2 sm:pl-4 lg:pl-8 xl:pl-12">
           <div className="flex gap-2 sm:gap-3 lg:gap-4 xl:gap-6 flex-col">
             <div className="app-header flex items-center mt-1 sm:mt-2 lg:mt-3 xl:mt-5 justify-between flex-col sm:flex-row gap-2 sm:gap-3 lg:gap-0">
