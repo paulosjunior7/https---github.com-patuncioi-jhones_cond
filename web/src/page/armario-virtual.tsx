@@ -35,6 +35,7 @@ export default function ArmarioVirtual() {
   const [data, setData] = useState<Outfits | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [newOutfitName, setNewOutfitName] = useState("");
+  const [editingOutfitName, setEditingOutfitName] = useState("");
 
   const loadOutfits = () => {
     fetchNui("jhones_cond:getOutFit").then((data) => {
@@ -306,7 +307,10 @@ export default function ArmarioVirtual() {
                   <DialogTrigger asChild>
                     <button
                       className="absolute z-50 hidden group-hover:flex top-1 left-0 bg-[#FF204E] rounded-full p-1"
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingOutfitName(outfit.name);
+                      }}
                     >
                       <Pencil className="text-white size-[20px]" />
                     </button>
@@ -329,13 +333,17 @@ export default function ArmarioVirtual() {
                         min="0"
                         className="bg-[#1e1e21] border border-[#FFFFFF1A] rounded-lg text-sm p-2 h-[38px] w-full font-semibold"
                         placeholder="Nome da roupa"
-                        defaultValue={outfit.name}
+                        value={editingOutfitName}
+                        onChange={(e) => setEditingOutfitName(e.target.value)}
                       />
                     </div>
                     <DialogFooter>
                       <div className="w-full">
                         <DialogClose asChild>
-                          <Button className="h-[40px]  w-full font-semibold bg-[#28282b] text-white">
+                          <Button
+                            className="h-[40px]  w-full font-semibold bg-[#28282b] text-white"
+                            onClick={() => setEditingOutfitName("")}
+                          >
                             Cancelar
                           </Button>
                         </DialogClose>
@@ -344,9 +352,10 @@ export default function ArmarioVirtual() {
                         <DialogClose asChild>
                           <Button
                             onClick={() => {
-                              handleEditarOutfit(outfit.id, outfit.name);
+                              handleEditarOutfit(outfit.id, editingOutfitName);
                             }}
                             className="h-[40px] w-full font-semibold bg-[#FF204E]"
+                            disabled={!editingOutfitName.trim()}
                           >
                             Confirmar alteração
                           </Button>

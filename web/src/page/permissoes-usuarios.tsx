@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { fetchNui } from "@/utils/fetchNui";
 import { ToastMessage } from "@/components/ToastMessage";
 import { toast } from "sonner";
+import { useResponsive } from "@/hooks/useResponsive";
 
 interface Permission {
   name: string;
@@ -44,6 +45,7 @@ interface Response {
 }
 
 export default function PermissoesUsuarios() {
+  const { isSmall, isMedium } = useResponsive();
   const [data, setData] = useState<PermissionsData | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [newUserId, setNewUserId] = useState("");
@@ -167,14 +169,36 @@ export default function PermissoesUsuarios() {
 
   return (
     <div className="flex gap-6 flex-col py-10">
-      <div className="flex-row flex justify-between items-center">
-        <p className="font-semibold text-lg">Membros com permissões</p>
-        <div className="flex gap-2 items-center">
+      <div
+        className={`flex justify-between items-center ${
+          isSmall ? "flex-col gap-4" : "flex-row"
+        }`}
+      >
+        <p
+          className={`font-semibold ${
+            isSmall ? "text-sm" : isMedium ? "text-base" : "text-lg"
+          }`}
+        >
+          Membros com permissões
+        </p>
+        <div
+          className={`flex gap-2 items-center ${
+            isSmall ? "flex-col w-full" : "flex-row"
+          }`}
+        >
           <div className="relative">
-            <Search className="text-gray-400 size-4 absolute left-2 top-1/2 transform -translate-y-1/2" />
+            <Search
+              className={`text-gray-400 absolute left-2 top-1/2 transform -translate-y-1/2 ${
+                isSmall ? "size-3" : "size-4"
+              }`}
+            />
             <input
               type="text"
-              className="bg-[#1e1e21] pl-10 border border-[#FFFFFF1A] rounded-lg text-sm p-2 h-[38px] w-[270px] font-semibold"
+              className={`bg-[#1e1e21] pl-10 border border-[#FFFFFF1A] rounded-lg p-2 font-semibold ${
+                isSmall
+                  ? "text-xs h-[32px] w-full"
+                  : "text-sm h-[38px] w-[270px]"
+              }`}
               placeholder="Pesquisar"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -184,20 +208,36 @@ export default function PermissoesUsuarios() {
           <Dialog>
             <form>
               <DialogTrigger asChild>
-                <button className="bg-[#FF204E] w-auto font-semibold flex items-center text-white px-4 py-2 h-[38px] rounded-lg text-sm">
-                  <Plus className="size-4 mr-2" />
-                  Adicionar membro
+                <button
+                  className={`bg-[#FF204E] w-auto font-semibold flex items-center text-white px-4 py-2 rounded-lg ${
+                    isSmall ? "text-xs h-[32px]" : "text-sm h-[38px]"
+                  }`}
+                >
+                  <Plus className={`mr-2 ${isSmall ? "size-3" : "size-4"}`} />
+                  {isSmall ? "Adicionar" : "Adicionar membro"}
                 </button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[550px] p-10 modal-cut-corners">
+              <DialogContent className={`p-10`}>
                 <DialogHeader className="flex gap-3">
-                  <DialogTitle className="font-bold text-xl flex gap-3 leading-baseline">
-                    <div className="bg-[#FF204E] size-8 rounded-lg  flex items-center justify-center">
-                      <Check />
+                  <DialogTitle
+                    className={`font-bold flex gap-3 leading-baseline ${
+                      isSmall ? "text-lg" : "text-xl"
+                    }`}
+                  >
+                    <div
+                      className={`bg-[#FF204E] rounded-lg flex items-center justify-center ${
+                        isSmall ? "size-6" : "size-8"
+                      }`}
+                    >
+                      <Check className={isSmall ? "size-4" : "size-5"} />
                     </div>
                     Permissões
                   </DialogTitle>
-                  <DialogDescription className="font-normal text-base">
+                  <DialogDescription
+                    className={`font-normal ${
+                      isSmall ? "text-sm" : "text-base"
+                    }`}
+                  >
                     Gerencie as permissões deste membro na sua residência.
                   </DialogDescription>
                 </DialogHeader>
@@ -205,21 +245,31 @@ export default function PermissoesUsuarios() {
                   <Input
                     type="number"
                     min="0"
-                    className="bg-[#1e1e21] border border-[#FFFFFF1A] rounded-lg text-sm p-2 h-[38px] w-full font-semibold"
+                    className={`bg-[#1e1e21] border border-[#FFFFFF1A] rounded-lg p-2 w-full font-semibold ${
+                      isSmall ? "text-xs h-[32px]" : "text-sm h-[38px]"
+                    }`}
                     placeholder="Passaporte"
                     onChangeCapture={(e) =>
                       setNewUserId((e.target as HTMLInputElement).value)
                     }
                   />
                 </div>
-                <div className="grid gap-6 py-3 grid-cols-2 overflow-y-auto max-h-[300px]  ">
+                <div
+                  className={`grid gap-6 py-3 overflow-y-auto max-h-[300px] ${
+                    isSmall ? "grid-cols-1" : "grid-cols-2"
+                  }`}
+                >
                   {newPermissions &&
                     Object.entries(newPermissions).map(([key, permission]) => (
                       <div
                         key={key}
                         className="flex items-center justify-between"
                       >
-                        <span className="text-sm font-medium text-white select-none">
+                        <span
+                          className={`font-medium text-white select-none ${
+                            isSmall ? "text-xs" : "text-sm"
+                          }`}
+                        >
                           {permission.name}
                         </span>
                         <Switch
@@ -243,7 +293,9 @@ export default function PermissoesUsuarios() {
                       onClick={() => {
                         handleAddMember(newUserId);
                       }}
-                      className="h-[40px] w-full font-semibold bg-[#FF204E]"
+                      className={`w-full font-semibold bg-[#FF204E] ${
+                        isSmall ? "h-[35px] text-xs" : "h-[40px] text-sm"
+                      }`}
                     >
                       Confirmar alteração
                     </Button>
@@ -266,34 +318,76 @@ export default function PermissoesUsuarios() {
           .map(([userId, user]) => (
             <div
               key={userId}
-              className="flex gap-2 px-4 py-2  justify-between border-[#FFFFFF1A] bg-[#1e1e21] border-[1px] rounded-[6px]"
+              className={`flex gap-2 px-4 py-2 justify-between border-[#FFFFFF1A] bg-[#1e1e21] border-[1px] rounded-[6px] ${
+                isSmall ? "flex-col items-start" : "flex-row items-center"
+              }`}
             >
-              <div className="flex items-center gap-3">
-                <User className="text-gray-400 size-5" />
-                <p className="text-base font-semibold text-white">
-                  {user?.name}
-                </p>
-                <div className="bg-[#FF204E] text-sm font-semibold px-2 rounded-md">
+              <div
+                className={`flex items-center gap-3 ${
+                  isSmall ? "w-full justify-between" : ""
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <User
+                    className={`text-gray-400 ${isSmall ? "size-4" : "size-5"}`}
+                  />
+                  <p
+                    className={`font-semibold text-white ${
+                      isSmall ? "text-sm" : "text-base"
+                    }`}
+                  >
+                    {user?.name}
+                  </p>
+                </div>
+                <div
+                  className={`bg-[#FF204E] font-semibold px-2 rounded-md ${
+                    isSmall ? "text-xs" : "text-sm"
+                  }`}
+                >
                   {userId}
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div
+                className={`flex gap-2 ${
+                  isSmall ? "w-full justify-end mt-2" : ""
+                }`}
+              >
                 <Dialog>
                   <form>
                     <DialogTrigger asChild>
-                      <button className="text-gray-400 bg-[#28282b] p-2 rounded-lg hover:text-white">
-                        <Pencil className="size-4" />
+                      <button
+                        className={`text-gray-400 bg-[#28282b] rounded-lg hover:text-white ${
+                          isSmall ? "p-1.5" : "p-2"
+                        }`}
+                      >
+                        <Pencil className={isSmall ? "size-3" : "size-4"} />
                       </button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[550px] p-10 modal-cut-corners">
+                    <DialogContent
+                      className={`p-10 modal-cut-corners ${
+                        isSmall ? "sm:max-w-[350px]" : "sm:max-w-[550px]"
+                      }`}
+                    >
                       <DialogHeader className="flex gap-3">
-                        <DialogTitle className="font-bold text-xl flex gap-3 leading-baseline">
-                          <div className="bg-[#FF204E] size-8 rounded-lg  flex items-center justify-center">
-                            <Check />
+                        <DialogTitle
+                          className={`font-bold flex gap-3 leading-baseline ${
+                            isSmall ? "text-lg" : "text-xl"
+                          }`}
+                        >
+                          <div
+                            className={`bg-[#FF204E] rounded-lg flex items-center justify-center ${
+                              isSmall ? "size-6" : "size-8"
+                            }`}
+                          >
+                            <Check className={isSmall ? "size-4" : "size-5"} />
                           </div>
                           Permissões
                         </DialogTitle>
-                        <DialogDescription className="font-normal text-base">
+                        <DialogDescription
+                          className={`font-normal ${
+                            isSmall ? "text-sm" : "text-base"
+                          }`}
+                        >
                           Gerencie as permissões deste membro na sua residência.
                         </DialogDescription>
                       </DialogHeader>
@@ -302,19 +396,29 @@ export default function PermissoesUsuarios() {
                           type={user?.id ? "text" : "number"}
                           min="0"
                           disabled={user?.id !== undefined}
-                          className="bg-[#1e1e21] border border-[#FFFFFF1A] rounded-lg text-sm p-2 h-[38px] w-full font-semibold"
+                          className={`bg-[#1e1e21] border border-[#FFFFFF1A] rounded-lg p-2 w-full font-semibold ${
+                            isSmall ? "text-xs h-[32px]" : "text-sm h-[38px]"
+                          }`}
                           placeholder="Passaporte"
                           defaultValue={user?.name.toString()}
                         />
                       </div>
-                      <div className="grid gap-6 py-3 grid-cols-2 overflow-y-auto max-h-[300px]  ">
+                      <div
+                        className={`grid gap-6 py-3 overflow-y-auto max-h-[300px] ${
+                          isSmall ? "grid-cols-1" : "grid-cols-2"
+                        }`}
+                      >
                         {Object.entries(data?.listPermissions || {}).map(
                           ([key, permission]) => (
                             <div
                               key={key}
                               className="flex items-center justify-between"
                             >
-                              <span className="text-sm font-medium text-white select-none">
+                              <span
+                                className={`font-medium text-white select-none ${
+                                  isSmall ? "text-xs" : "text-sm"
+                                }`}
+                              >
                                 {permission.name}
                               </span>
                               <Switch
@@ -337,7 +441,9 @@ export default function PermissoesUsuarios() {
                         <DialogClose asChild>
                           <Button
                             onClick={() => handleConfirmEdit(userId)}
-                            className="h-[40px] w-full font-semibold bg-[#FF204E]"
+                            className={`w-full font-semibold bg-[#FF204E] ${
+                              isSmall ? "h-[35px] text-xs" : "h-[40px] text-sm"
+                            }`}
                           >
                             Confirmar alteração
                           </Button>
@@ -350,30 +456,64 @@ export default function PermissoesUsuarios() {
                 <Dialog>
                   <form>
                     <DialogTrigger asChild>
-                      <button className="bg-[#FF204E] p-2 rounded-lg text-gray-400 hover:text-white">
-                        <UserX className="size-4 text-white" />
+                      <button
+                        className={`bg-[#FF204E] rounded-lg text-gray-400 hover:text-white ${
+                          isSmall ? "p-1.5" : "p-2"
+                        }`}
+                      >
+                        <UserX
+                          className={`text-white ${
+                            isSmall ? "size-3" : "size-4"
+                          }`}
+                        />
                       </button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px] p-10 modal-cut-corners">
+                    <DialogContent
+                      className={`p-10 modal-cut-corners ${
+                        isSmall ? "sm:max-w-[350px]" : "sm:max-w-[425px]"
+                      }`}
+                    >
                       <DialogHeader className="flex gap-3">
-                        <DialogTitle className="font-bold text-xl flex gap-3 leading-baseline">
-                          <div className="bg-[#FF204E] size-8 rounded-lg  flex items-center justify-center">
-                            <Check />
+                        <DialogTitle
+                          className={`font-bold flex gap-3 leading-baseline ${
+                            isSmall ? "text-lg" : "text-xl"
+                          }`}
+                        >
+                          <div
+                            className={`bg-[#FF204E] rounded-lg flex items-center justify-center ${
+                              isSmall ? "size-6" : "size-8"
+                            }`}
+                          >
+                            <Check className={isSmall ? "size-4" : "size-5"} />
                           </div>
                           Exclusão
                         </DialogTitle>
-                        <DialogDescription className="font-normal text-base">
+                        <DialogDescription
+                          className={`font-normal ${
+                            isSmall ? "text-sm" : "text-base"
+                          }`}
+                        >
                           {`Você realmente deseja remover este membro ${user.name}  da residência?`}
                         </DialogDescription>
                       </DialogHeader>
 
                       <DialogFooter>
-                        <div className="flex flex-row w-full gap-2 sm:max-w-[425px] justify-between">
+                        <div
+                          className={`flex w-full gap-2 justify-between ${
+                            isSmall
+                              ? "flex-col sm:max-w-[350px]"
+                              : "flex-row sm:max-w-[425px]"
+                          }`}
+                        >
                           <div className="w-full">
                             <DialogClose asChild>
                               <Button
                                 variant="outline"
-                                className="h-[40px]  w-full font-semibold bg-[#28282b] text-white"
+                                className={`w-full font-semibold bg-[#28282b] text-white ${
+                                  isSmall
+                                    ? "h-[35px] text-xs"
+                                    : "h-[40px] text-sm"
+                                }`}
                               >
                                 Cancelar
                               </Button>
@@ -383,7 +523,11 @@ export default function PermissoesUsuarios() {
                             <DialogClose asChild>
                               <Button
                                 onClick={() => handleConfirmDelete(userId)}
-                                className="h-[40px] w-full font-semibold bg-[#FF204E]"
+                                className={`w-full font-semibold bg-[#FF204E] ${
+                                  isSmall
+                                    ? "h-[35px] text-xs"
+                                    : "h-[40px] text-sm"
+                                }`}
                               >
                                 Confirmar
                               </Button>

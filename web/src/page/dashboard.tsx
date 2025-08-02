@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { Switch } from "../components/ui/switch";
 import { cn } from "../lib/utils";
-import { useClientData } from "../hooks/useClientData";
-import { usePerformance } from "../hooks/usePerformance";
+import { useResponsive } from "../hooks/useResponsive";
 import useLoader from "@/hooks/useLoader";
 import Loader from "@/components/Loader";
 import { IconLocker, IconUnlocker } from "../components/icons";
@@ -32,10 +31,10 @@ interface Response {
 
 export default function Dashboard() {
   const { loaderState, showLoader, hideLoader } = useLoader();
+  const { isSmall, isMedium, isLarge, isXLarge } = useResponsive();
   const [data, setData] = useState<HomeData | null>(null);
 
   const loadHomeData = () => {
-    showLoader("Carregando dados...", "spinner");
     fetchNui("jhones_cond:getHomeData")
       .then((data) => {
         const homeData = data as HomeData;
@@ -106,119 +105,122 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex gap-6 flex-col">
-      <p className="font-semibold text-lg">Informações da residencia</p>
-      <div className="h-[150px] border-[#FFFFFF1A] bg-[#1e1e21] border-[1px] rounded-lg flex w-full relative">
-        <div className="w-[265px] h-full relative">
-          <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-l from-transparent via-black/40 to-black/80 z-10 rounded-t-lg"></div>
-          <img
-            src="/assets/hero1.png"
-            alt="Casa Branca Nivel 3"
-            className="h-full w-full object-cover rounded-lg"
-          />
-        </div>
-
-        <div className=" p-6 grid grid-cols-3 flex-row w-full">
-          <div className=" flex flex-col justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Nome da residencia</p>
-              <p className="text-white font-bold text-md">
-                {data?.residenceName}
-              </p>
-            </div>
-
-            <div className="flex flex-col">
-              <p className="text-gray-400 text-sm">
-                Data de vencimento da taxa
-              </p>
-              <p className="text-white font-bold text-md">{data?.expireTax}</p>
-            </div>
+    <>
+      {loaderState.show && <Loader />}
+      <div className="dashboard-container flex gap-2 sm:gap-4 lg:gap-6 flex-col p-1 sm:p-2 lg:p-4 xl:p-6">
+        <p className="title-responsive font-semibold text-xs sm:text-sm lg:text-base xl:text-lg">
+          Informações da residencia
+        </p>
+        <div className="residence-card  min-h-[80px] sm:h-[140px] lg:h-[150px] xl:h-[160px] border-[#FFFFFF1A] bg-[#1e1e21] border-[1px] rounded-lg flex w-full relative flex-col sm:flex-row">
+          <div className="w-full sm:w-[200px] md:w-[240px] lg:w-[265px] residence-image h-[60px] sm:h-full relative">
+            <div className="absolute top-0 left-0 right-0 h-8 sm:h-12 bg-gradient-to-l from-transparent via-black/40 to-black/80 z-10 rounded-t-lg"></div>
+            <img
+              src="/assets/hero1.png"
+              alt="Casa Branca Nivel 3"
+              className="h-full w-full object-cover rounded-t-lg sm:rounded-lg"
+            />
           </div>
-          <div className="flex flex-col justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">
-                Total de usuários cadastrados
-              </p>
-              <p className="text-white font-bold">{data?.totalUsers} Membros</p>
-            </div>
 
-            <div>
-              <p className="text-gray-400 text-sm">Total de roupas salvas</p>
-              <p className="text-white font-bold">
-                {data?.totalClothes} Roupas
-              </p>
-            </div>
-          </div>
-          <div className="justify-end items-center flex">
-            <div className="flex items-center gap-2 bg-[#242528] p-3 rounded-lg">
-              <Switch
-                checked={data?.dangerZoneStatus || false}
-                onCheckedChange={(checked) => {
-                  handleChangeDangerZone(checked);
-                }}
-              />
-              <span className="text-sm font-medium text-white select-none">
-                DangerZone
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="flex gap-6 flex-col">
-        <p className="font-semibold text-lg">Controle de portas</p>
-        <div className="flex gap-2 flex-col">
-          {data?.newState.map((door: DoorState, index: number) => (
-            <div
-              key={index}
-              className="h-[44px] border-[#FFFFFF1A] bg-[#1e1e21] border-[1px] rounded-lg flex w-full items-center p-2 "
-            >
-              <div className="flex items-center gap-2 w-full">
-                <div
-                  className={cn(
-                    "bg-[#FF204E] h-[28px] w-[28px] rounded-lg mr-2 flex items-center justify-center",
-                    door?.state ? "bg-[#FF204E]" : "bg-[#28282b]"
-                  )}
-                >
-                  {door?.state ? (
-                    <IconLocker size={13} color="white" />
-                  ) : (
-                    <IconUnlocker size={13} color="white" />
-                  )}
-                </div>
-                <div className="font-medium text-base">{door.name}</div>
+          {/* Lista de Residências */}
+          <div
+            className={"grid grid-cols-3  gap-2 sm:gap-2 md:gap-4 w-full p-4"}
+          >
+            <div className="flex flex-col  justify-between gap-1 sm:gap-2 lg:gap-0">
+              <div>
+                <p className="text-responsive text-gray-400 text-xs">
+                  Nome da residencia
+                </p>
+                <p className="text-white font-bold text-xs sm:text-sm lg:text-base break-words">
+                  {data?.residenceName}
+                </p>
               </div>
-              <div className="flex items-center justify-end w-full gap-2">
-                <span className="text-gray-400 text-sm select-none">
-                  {door?.state ? "Trancado" : "Destrancado"}
-                </span>
+
+              <div className="flex flex-col">
+                <p className="text-responsive text-gray-400 text-xs">
+                  Data de vencimento da taxa
+                </p>
+                <p className="text-white font-bold text-xs sm:text-sm lg:text-base">
+                  {data?.expireTax}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col justify-between gap-1 sm:gap-2 lg:gap-0">
+              <div>
+                <p className="text-responsive text-gray-400 text-xs">
+                  Total de usuários cadastrados
+                </p>
+                <p className="text-white font-bold text-xs sm:text-sm lg:text-base">
+                  {data?.totalUsers} Membros
+                </p>
+              </div>
+
+              <div>
+                <p className="text-responsive text-gray-400 text-xs">
+                  Total de roupas salvas
+                </p>
+                <p className="text-white font-bold text-xs sm:text-sm lg:text-base">
+                  {data?.totalClothes} Roupas
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center justify-center sm:justify-end">
+              <div className="flex items-center gap-1 sm:gap-2 bg-[#242528] p-1 sm:p-2 lg:p-3 rounded-lg w-fit">
                 <Switch
-                  checked={door?.state}
+                  checked={data?.dangerZoneStatus || false}
                   onCheckedChange={(checked) => {
-                    handleChangeDoorState(door.index, checked);
+                    handleChangeDangerZone(checked);
                   }}
                 />
+                <span className="button-responsive text-xs font-medium text-white select-none">
+                  DangerZone
+                </span>
               </div>
             </div>
-          ))}
+          </div>
+        </div>
+        <div className="flex gap-2 sm:gap-4 lg:gap-6 flex-col">
+          <p className="title-responsive font-semibold text-xs sm:text-sm lg:text-base xl:text-lg">
+            Controle de portas
+          </p>
+          <div className="flex gap-1 sm:gap-2 flex-col">
+            {data?.newState.map((door: DoorState, index: number) => (
+              <div
+                key={index}
+                className="door-item min-h-[32px] sm:h-[44px] xl:h-[48px] border-[#FFFFFF1A] bg-[#1e1e21] border-[1px] rounded-lg flex w-full items-center p-1 sm:p-2 lg:p-3"
+              >
+                <div className="flex items-center gap-1 sm:gap-2 w-full min-w-0">
+                  <div
+                    className={cn(
+                      "bg-[#FF204E] h-[20px] w-[20px] sm:h-[24px] sm:w-[24px] lg:h-[28px] lg:w-[28px] rounded-lg mr-1 sm:mr-2 flex items-center justify-center flex-shrink-0",
+                      door?.state ? "bg-[#FF204E]" : "bg-[#28282b]"
+                    )}
+                  >
+                    {door?.state ? (
+                      <IconLocker size={isSmall ? 9 : 13} color="white" />
+                    ) : (
+                      <IconUnlocker size={isSmall ? 9 : 13} color="white" />
+                    )}
+                  </div>
+                  <div className="text-responsive font-medium text-xs sm:text-sm lg:text-base truncate">
+                    {door.name}
+                  </div>
+                </div>
+                <div className="flex items-center justify-end gap-1 sm:gap-2 flex-shrink-0">
+                  <span className="text-responsive text-gray-400 text-xs select-none hidden sm:block">
+                    {door?.state ? "Trancado" : "Destrancado"}
+                  </span>
+                  <Switch
+                    checked={door?.state}
+                    onCheckedChange={(checked) => {
+                      handleChangeDoorState(door.index, checked);
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
-}
-
-{
-  /* Status dos dados */
-}
-{
-  /* {false && (
-        <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-3">
-          <span className="text-blue-400">Carregando dados...</span>
-        </div>
-      )}
-
-      {false && (
-        <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-3">
-          <span className="text-red-400">Erro: {error}</span>
-        </div>
-      )} */
 }

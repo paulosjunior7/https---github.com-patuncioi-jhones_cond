@@ -133,6 +133,66 @@ code {
   );
 }
 
+/* Customização da barra de scroll */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 32, 78, 0.7); /* Cor vermelha do tema */
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 32, 78, 0.9);
+}
+
+::-webkit-scrollbar-corner {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Firefox scrollbar customization */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 32, 78, 0.7) rgba(255, 255, 255, 0.05);
+}
+
+/* Scrollbar customizado para áreas de conteúdo */
+.content-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 3px;
+}
+
+.content-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 32, 78, 0.8),
+    rgba(255, 32, 78, 0.6)
+  );
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.content-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 32, 78, 1),
+    rgba(255, 32, 78, 0.8)
+  );
+  transform: scaleX(1.2);
+}
+
 .modal-cut-corners::before {
   content: "";
   position: absolute;

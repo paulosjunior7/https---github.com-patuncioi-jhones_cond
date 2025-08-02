@@ -35,12 +35,12 @@ export default function Taxas() {
   };
 
   return (
-    <div className="flex gap-6 flex-col py-5">
-      <span className="text-white text-lg font-bold">
+    <div className="flex gap-2 sm:gap-2 md:gap-6 flex-col py-5 h-full max-h-full overflow-hidden">
+      <span className="text-white font-semibold text-base md:text-lg flex-shrink-0">
         Informações Financeiras
       </span>
       {/* Informações Financeiras */}
-      <div className="border border-[#FFFFFF1A] bg-[#1e1e21] rounded-lg p-4 h-[80px] items-center">
+      <div className="border border-[#FFFFFF1A] bg-[#1e1e21] rounded-lg p-4 h-[80px] items-center flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
             <div className="flex items-center gap-4">
@@ -155,7 +155,7 @@ export default function Taxas() {
       </div>
 
       {/* Próximo vencimento */}
-      <div className="flex items-center justify-between border h-[46px] border-[#FFFFFF1A] bg-[#1e1e21] rounded-lg p-4">
+      <div className="flex items-center justify-between border h-[46px] border-[#FFFFFF1A] bg-[#1e1e21] rounded-lg p-4 flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className="size-8 bg-[#FF204E] rounded-full flex items-center justify-center">
             <svg
@@ -178,14 +178,14 @@ export default function Taxas() {
       </div>
 
       {/* Histórico de pagamentos */}
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-between items-center">
-          <h3 className="text-white font-semibold text-lg">
+      <div className="flex flex-col gap-4 flex-1 min-h-0 overflow-hidden">
+        <div className="flex justify-between items-center flex-shrink-0">
+          <h3 className="text-white font-semibold text-base md:text-lg">
             Históricos de pagamentos
           </h3>
         </div>
 
-        <div className="flex flex-col gap-2 max-h-[200px] overflow-y-auto pr-4">
+        <div className="flex flex-col gap-2 flex-1 overflow-y-auto pr-4 min-h-0 h-[180px] sm:max-h-[280px] md:max-h-[400px]">
           {Array.from({ length: 10 }, (_, index) => (
             <div
               key={index}
