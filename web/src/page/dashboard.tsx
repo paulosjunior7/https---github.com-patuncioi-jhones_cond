@@ -30,8 +30,8 @@ interface Response {
 }
 
 export default function Dashboard() {
-  const { loaderState, showLoader, hideLoader } = useLoader();
-  const { isSmall, isMedium, isLarge, isXLarge } = useResponsive();
+  const { loaderState, hideLoader } = useLoader();
+  const { isSmall } = useResponsive();
   const [data, setData] = useState<HomeData | null>(null);
 
   const loadHomeData = () => {
