@@ -33,6 +33,7 @@ export default function Garage() {
   const [loading, setLoading] = useState<boolean>(true);
   const { isSmall, isMedium } = useResponsive();
 
+  console.log("Carregando garagem...");
   const loadVehicles = () => {
     setLoading(true);
     fetchNui("jhones_cond:getUserVehicles")

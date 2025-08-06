@@ -7,47 +7,71 @@ import { isEnvBrowser } from "../utils/misc";
 const VisibilityCtx = createContext<VisibilityProviderValue | null>(null);
 
 interface VisibilityProviderValue {
-  setVisible: (visible: boolean) => void;
-  visible: boolean;
+  setVisiblePainel: (visible: boolean) => void;
+  visiblePainel: boolean;
+  setVisibleGarage: (visible: boolean) => void;
+  visibleGarage: boolean;
+  setVisibleContext: (context: boolean) => void;
+  visibleContext: boolean;
 }
 
-// This should be mounted at the top level of your application, it is currently set to
-// apply a CSS visibility value. If this is non-performant, this should be customized.
 export const VisibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [visible, setVisible] = useState(false);
+  const [visiblePainel, setVisiblePainel] = useState(false);
+  const [visibleGarage, setVisibleGarage] = useState(false);
+  const [visibleContext, setVisibleContext] = useState(false);
 
-  useNuiEvent<boolean>("setVisible", setVisible);
+  useNuiEvent<boolean>("setVisibleGarage", setVisibleGarage);
+  useNuiEvent<boolean>("setVisiblePainel", setVisiblePainel);
+  useNuiEvent<boolean>("setVisibleContext", setVisibleContext);
 
-  // Handle pressing escape/backspace
   useEffect(() => {
-    // Only attach listener when we are visible
-    if (!visible) {
-      fetchNui("hideFrame");
-    }
-
     const keyHandler = (e: KeyboardEvent) => {
       if (["Backspace", "Escape"].includes(e.code)) {
-        if (!isEnvBrowser()) fetchNui("hideFrame");
-        else setVisible(!visible);
+        if (!isEnvBrowser()) {
+          fetchNui("hideFrame");
+        } else {
+          if (visibleGarage) {
+            setVisibleGarage(false);
+          } else if (visiblePainel) {
+            setVisiblePainel(false);
+          } else if (visibleContext) {
+            setVisibleContext(false);
+          }
+        }
       }
     };
 
     window.addEventListener("keydown", keyHandler);
-
     return () => window.removeEventListener("keydown", keyHandler);
-  }, [visible]);
+  }, [visiblePainel, visibleGarage, visibleContext]);
+
+  useEffect(() => {
+    if (!visiblePainel && !visibleGarage && !visibleContext) {
+      fetchNui("hideFrame");
+    }
+  }, [visiblePainel, visibleGarage, visibleContext]);
 
   return (
     <VisibilityCtx.Provider
       value={{
-        visible,
-        setVisible,
+        visiblePainel,
+        setVisiblePainel,
+        visibleGarage,
+        setVisibleGarage,
+        visibleContext,
+        setVisibleContext,
       }}
     >
       <div
-        style={{ visibility: visible ? "visible" : "hidden", height: "100%" }}
+        style={{
+          visibility:
+            visiblePainel || visibleGarage || visibleContext
+              ? "visible"
+              : "hidden",
+          height: "100%",
+        }}
       >
         {children}
       </div>
