@@ -1,31 +1,23 @@
 import { ToastMessage } from "@/components/ToastMessage";
 import { useResponsive } from "@/hooks/useResponsive";
+import { useVisibility } from "@/providers/VisibilityProvider";
 import { fetchNui } from "@/utils/fetchNui";
-import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-interface MockResponse {
-  id: number;
-  name: string;
+export interface MockResponseContexto {
   title: string;
+  contextList: ContextListItem[];
+}
+export interface ContextListItem {
+  index: string;
+  name: string;
+  btnMessage: string;
+  title: string;
+  description: string;
+  imageSrc: string;
   locked: boolean;
 }
-
-const mockResponse: MockResponse[] = [
-  {
-    id: 1,
-    name: "Barber Shop",
-    title: "Loja de Barbearia",
-    locked: false,
-  },
-  {
-    id: 2,
-    name: "SkinShop",
-    title: "Loja de Roupas",
-    locked: false,
-  },
-];
 
 interface Response {
   message: string;
@@ -33,40 +25,25 @@ interface Response {
 }
 
 const PainelContext = () => {
-  const [contextos, setContext] = useState<MockResponse[]>([]);
-  const [filteredcontextos, setFilteredContext] = useState<MockResponse[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const { isSmall, isMedium } = useResponsive();
+  const { visibleContext, setVisibleContext } = useVisibility();
 
   const loadContext = () => {
     setLoading(true);
     setTimeout(() => {
-      setContext(mockResponse);
-      setFilteredContext(mockResponse);
       setLoading(false);
     }, 500);
   };
 
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-    if (term.trim() === "") {
-      setFilteredContext(contextos);
-    } else {
-      const filtered = contextos.filter(
-        (contexto) =>
-          contexto.name.toLowerCase().includes(term.toLowerCase()) ||
-          contexto.title.toLowerCase().includes(term.toLowerCase())
-      );
-      setFilteredContext(filtered);
-    }
-  };
-
-  const handleOpen = async (id: number) => {
+  const handleOpen = async (index: string) => {
     try {
-      const response: Response = await fetchNui("jhones_cond:openLoja", {
-        id,
-      });
+      const response: Response = await fetchNui(
+        "jhones_cond:sendIndexContext",
+        {
+          index,
+        }
+      );
 
       if (response) {
         toast(
@@ -85,6 +62,7 @@ const PainelContext = () => {
 
       if (response.success) {
         loadContext();
+        setVisibleContext(null);
       }
     } catch (error) {
       console.error("Erro ao retirar veículo:", error);
@@ -93,10 +71,10 @@ const PainelContext = () => {
 
   useEffect(() => {
     loadContext();
-  }, []);
+  }, [visibleContext]);
 
   return (
-    <div className="flex gap-6 flex-col py-10 h-full">
+    <div className="flex gap-6 flex-col py-10 h-full z-[99999]">
       <div
         className={`flex justify-between items-center ${
           isSmall ? "flex-col gap-4" : "flex-row"
@@ -104,67 +82,68 @@ const PainelContext = () => {
       >
         <p
           className={`font-semibold ${
-            isSmall ? "text-sm" : isMedium ? "text-base" : "text-lg"
+            isSmall ? "text-2xl" : isMedium ? "text-2xl" : "text-2xl"
           }`}
         >
           Lista de lojas
         </p>
-        <div className="flex gap-2 items-center">
-          <div className="relative">
-            <Search className="text-gray-400 size-4 absolute left-2 top-1/2 transform -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => handleSearch(e.target.value)}
-              className={`bg-[#1e1e21] pl-10 border border-[#FFFFFF1A] rounded-lg text-sm p-2 h-[38px] font-semibold ${
-                isSmall ? "w-[200px]" : "w-[270px]"
-              }`}
-              placeholder="Pesquisar"
-            />
-          </div>
-        </div>
       </div>
 
       <div className="flex flex-col gap-4 flex-1 overflow-y-auto pr-4 pb-3">
         {loading ? (
           <div className="flex items-center justify-center h-full">
-            <div className="text-white text-lg">Carregando veículos...</div>
+            <div className="text-white text-lg">Carregando Lojas...</div>
           </div>
-        ) : filteredcontextos.length === 0 ? (
+        ) : visibleContext?.contextList?.length === 0 ? (
           <div className="flex items-center justify-center h-full">
-            <div className="text-gray-400 text-lg">
-              {searchTerm
-                ? "Nenhum veículo encontrado"
-                : "Nenhum veículo disponível"}
-            </div>
+            {"Não há lojas disponíveis no momento."}
           </div>
         ) : (
-          filteredcontextos.map((vehicle) => (
+          visibleContext?.contextList?.map((context) => (
             <div
-              key={vehicle.title}
-              className={`border border-[#FFFFFF1A] bg-[#1e1e21] rounded-lg p-4 flex items-center justify-between ${
-                isSmall ? "flex-col gap-4" : "flex-row"
+              key={context.title}
+              className={`border border-[#0505051a] bg-[#1e1e21] rounded-lg flex overflow-hidden ${
+                isSmall
+                  ? "flex-col gap-4 items-center p-4"
+                  : "flex-row items-center p-0"
               }`}
             >
-              <div className="flex items-center gap-4 flex-row">
-                <div className="flex flex-row gap-3">
+              <img
+                src={context.imageSrc}
+                alt={context.title}
+                className={`object-cover border-[#333] rounded-md ${
+                  isSmall ? "w-20 h-20 mb-2" : "w-16 h-16 m-4"
+                }`}
+              />
+              <div
+                className={`flex-1 flex ${
+                  isSmall
+                    ? "flex-col items-center text-center gap-2"
+                    : "flex-row items-center justify-between"
+                } w-full`}
+              >
+                <div
+                  className={`flex flex-col ${
+                    isSmall ? "items-center" : "items-start ml-0"
+                  }`}
+                >
                   <h3
                     className={`font-bold text-white ${
                       isSmall ? "text-base" : "text-lg"
                     }`}
                   >
-                    {vehicle.name}
+                    {context.name}
                   </h3>
-                  <div className="flex items-center gap-2">
-                    <span>{vehicle.title}</span>
-                  </div>
+                  <span className="text-gray-300">{context.title}</span>
                 </div>
-              </div>
-              <div>
-                <>
+                <div
+                  className={`${
+                    isSmall ? "w-full mt-3 p-4" : "ml-4 flex-shrink-0 p-4"
+                  }`}
+                >
                   <button
                     onClick={() => {
-                      handleOpen(vehicle.id);
+                      handleOpen(context.index);
                     }}
                     className={`bg-[#FF204E] hover:bg-[#FF204E]/80 font-semibold flex items-center text-white rounded-lg ${
                       isSmall
@@ -172,9 +151,9 @@ const PainelContext = () => {
                         : "px-4 py-2 h-[38px] text-sm"
                     }`}
                   >
-                    Abrir
+                    {context.btnMessage}
                   </button>
-                </>
+                </div>
               </div>
             </div>
           ))

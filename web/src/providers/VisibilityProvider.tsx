@@ -3,6 +3,7 @@ import type { Context } from "react";
 import { useNuiEvent } from "../hooks/useNuiEvent";
 import { fetchNui } from "../utils/fetchNui";
 import { isEnvBrowser } from "../utils/misc";
+import type { MockResponseContexto } from "@/page/PainelContext";
 
 const VisibilityCtx = createContext<VisibilityProviderValue | null>(null);
 
@@ -11,8 +12,8 @@ interface VisibilityProviderValue {
   visiblePainel: boolean;
   setVisibleGarage: (visible: boolean) => void;
   visibleGarage: boolean;
-  setVisibleContext: (context: boolean) => void;
-  visibleContext: boolean;
+  setVisibleContext: (context: MockResponseContexto | null) => void;
+  visibleContext: MockResponseContexto | null;
 }
 
 export const VisibilityProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -20,24 +21,31 @@ export const VisibilityProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [visiblePainel, setVisiblePainel] = useState(false);
   const [visibleGarage, setVisibleGarage] = useState(false);
-  const [visibleContext, setVisibleContext] = useState(false);
+  const [visibleContext, setVisibleContext] =
+    useState<MockResponseContexto | null>(null);
 
   useNuiEvent<boolean>("setVisibleGarage", setVisibleGarage);
   useNuiEvent<boolean>("setVisiblePainel", setVisiblePainel);
-  useNuiEvent<boolean>("setVisibleContext", setVisibleContext);
+  useNuiEvent<MockResponseContexto | null>("setVisibleContext", (data) =>
+    setVisibleContext(data)
+  );
 
   useEffect(() => {
     const keyHandler = (e: KeyboardEvent) => {
-      if (["Backspace", "Escape"].includes(e.code)) {
+      console.log("Key pressed:", e.code);
+      if (e.code === "Backspace" || e.code === "Escape") {
         if (!isEnvBrowser()) {
           fetchNui("hideFrame");
         } else {
           if (visibleGarage) {
             setVisibleGarage(false);
+            fetchNui("hideFrame");
           } else if (visiblePainel) {
             setVisiblePainel(false);
-          } else if (visibleContext) {
-            setVisibleContext(false);
+            fetchNui("hideFrame");
+          } else if (visibleContext && visibleContext?.title) {
+            setVisibleContext(null);
+            fetchNui("hideFrame");
           }
         }
       }
@@ -67,7 +75,9 @@ export const VisibilityProvider: React.FC<{ children: React.ReactNode }> = ({
       <div
         style={{
           visibility:
-            visiblePainel || visibleGarage || visibleContext
+            visiblePainel ||
+            visibleGarage ||
+            (visibleContext && visibleContext?.title !== "")
               ? "visible"
               : "hidden",
           height: "100%",

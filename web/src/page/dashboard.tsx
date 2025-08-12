@@ -46,10 +46,12 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
+    console.log("Dashboard Rendered");
     loadHomeData();
   }, []);
 
   const handleChangeDoorState = async (index: number, checked: boolean) => {
+    console.log("handleChangeDoorState", { index, checked });
     setData((prevData) => {
       if (!prevData) return null;
       const updatedState = prevData.newState.map((door) =>

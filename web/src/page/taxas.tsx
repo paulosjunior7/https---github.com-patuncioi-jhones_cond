@@ -15,6 +15,8 @@ import { Check } from "lucide-react";
 import { useResponsive } from "@/hooks/useResponsive";
 import { useEffect, useState } from "react";
 import { fetchNui } from "@/utils/fetchNui";
+import type { MockResponseContexto } from "./PainelContext";
+import { useVisibility } from "@/providers/VisibilityProvider";
 
 interface PaymentHistory {
   title: string;
@@ -28,8 +30,9 @@ interface ResidenceFinanceData {
   nextPaymentValue: number;
   nextPaymentDate: string;
   paymentsHistory: PaymentHistory[];
+  paymentsNextContext: MockResponseContexto | null;
+  paymentTaxContext: MockResponseContexto | null;
 }
-
 interface Response {
   message: string;
   success: boolean;
@@ -41,6 +44,7 @@ export default function Taxas() {
   );
   const [loading, setLoading] = useState<boolean>(true);
   const { isSmall, isMedium } = useResponsive();
+  const { visibleContext, setVisibleContext } = useVisibility();
 
   const loadFinanceData = () => {
     setLoading(true);
@@ -64,33 +68,35 @@ export default function Taxas() {
       let response: Response;
 
       if (type === "advance") {
-        response = await fetchNui("jhones_cond:advancepayment", {
-          value: financeData?.pendingPayment || 0,
-        });
+        // response = await fetchNui("jhones_cond:advancepayment", {
+        //   value: financeData?.pendingPayment || 0,
+        // });
+        setVisibleContext(financeData?.paymentsNextContext || null);
       } else {
-        response = await fetchNui("jhones_cond:payResidence", {
-          value: financeData?.pendingPayment || 0,
-        });
+        // response = await fetchNui("jhones_cond:payResidence", {
+        //   value: financeData?.pendingPayment || 0,
+        // });
+        setVisibleContext(financeData?.paymentTaxContext || null);
       }
 
-      if (response) {
-        toast(
-          <ToastMessage
-            text={response.message}
-            type={response.success ? "success" : "error"}
-          />,
-          {
-            duration: 5000,
-            style: {
-              display: "none",
-            },
-          }
-        );
-      }
+      // if (true) {
+      //   toast(
+      //     <ToastMessage
+      //       text={response.message}
+      //       type={response.success ? "success" : "error"}
+      //     />,
+      //     {
+      //       duration: 5000,
+      //       style: {
+      //         display: "none",
+      //       },
+      //     }
+      //   );
+      // }
 
-      if (response.success) {
-        loadFinanceData();
-      }
+      // if (response.success) {
+      //   loadFinanceData();
+      // }
     } catch (error) {
       console.error("Erro ao processar pagamento:", error);
     }
@@ -136,153 +142,25 @@ export default function Taxas() {
               <span className="text-gray-400 text-sm">Valor da taxa</span>
             </div>
             <div className="flex items-center gap-4 h-[34px]">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <button
-                    className={`border-[#FFFFFF1A] border hover:bg-[#FFFFFF1A] font-semibold flex items-center text-white rounded-lg ${
-                      isSmall
-                        ? "px-3 py-2 h-[35px] text-xs"
-                        : "px-4 py-2 h-[38px] text-sm"
-                    }`}
-                  >
-                    Adiantar pagamento
-                  </button>
-                </DialogTrigger>
-                <DialogContent
-                  className={`p-10 modal-cut-corners${
-                    isSmall ? "sm:max-w-[300px]" : "sm:max-w-[425px]"
-                  }`}
-                >
-                  <DialogHeader className="flex gap-3">
-                    <DialogTitle
-                      className={`font-bold flex gap-3 leading-baseline ${
-                        isSmall ? "text-lg" : "text-xl"
-                      }`}
-                    >
-                      <div className="bg-[#FF204E] size-8 rounded-lg flex items-center justify-center">
-                        <Check />
-                      </div>
-                      Confirmação o adiantamento
-                    </DialogTitle>
-                    <DialogDescription
-                      className={`font-normal py-5 ${
-                        isSmall ? "text-sm" : "text-base"
-                      }`}
-                    >
-                      Confirma o <span className="font-bold">adiantamento</span>{" "}
-                      do pagamento da taxa de condomínio no valor de $
-                      {financeData.pendingPayment.toLocaleString()}?
-                    </DialogDescription>
-                  </DialogHeader>
+              <button
+                onClick={() => handlePayment("advance")}
+                className={`border-[#FFFFFF1A] border hover:bg-[#FFFFFF1A] font-semibold flex items-center text-white rounded-lg ${
+                  isSmall
+                    ? "px-3 py-2 h-[35px] text-xs"
+                    : "px-4 py-2 h-[38px] text-sm"
+                }`}
+              >
+                Adiantar pagamento
+              </button>
 
-                  <DialogFooter>
-                    <div
-                      className={`flex w-full gap-2 justify-between ${
-                        isSmall ? "flex-col" : "flex-row"
-                      }`}
-                    >
-                      <div className="w-full">
-                        <DialogClose asChild>
-                          <Button
-                            variant="outline"
-                            className={`w-full font-semibold bg-[#28282b] text-white ${
-                              isSmall ? "h-[35px] text-xs" : "h-[40px] text-sm"
-                            }`}
-                          >
-                            Cancelar
-                          </Button>
-                        </DialogClose>
-                      </div>
-                      <div className="w-full">
-                        <DialogClose asChild>
-                          <Button
-                            onClick={() => handlePayment("advance")}
-                            className={`w-full font-semibold bg-[#FF204E] ${
-                              isSmall ? "h-[35px] text-xs" : "h-[40px] text-sm"
-                            }`}
-                          >
-                            Confirmar
-                          </Button>
-                        </DialogClose>
-                      </div>
-                    </div>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-
-              <Dialog>
-                <DialogTrigger asChild>
-                  <button
-                    className={`bg-[#FF204E] hover:bg-[#FF204E]/80 text-white items-center rounded-lg font-semibold ${
-                      isSmall
-                        ? "px-4 py-2 h-[35px] text-xs"
-                        : "px-6 py-1 text-sm"
-                    }`}
-                  >
-                    Pagar taxa
-                  </button>
-                </DialogTrigger>
-                <DialogContent
-                  className={`p-10 modal-cut-corners${
-                    isSmall ? "sm:max-w-[300px]" : "sm:max-w-[425px]"
-                  }`}
-                >
-                  <DialogHeader className="flex gap-3">
-                    <DialogTitle
-                      className={`font-bold flex gap-3 leading-baseline ${
-                        isSmall ? "text-lg" : "text-xl"
-                      }`}
-                    >
-                      <div className="bg-[#FF204E] size-8 rounded-lg flex items-center justify-center">
-                        <Check />
-                      </div>
-                      Confirmação de pagamento
-                    </DialogTitle>
-                    <DialogDescription
-                      className={`font-normal py-5 ${
-                        isSmall ? "text-sm" : "text-base"
-                      }`}
-                    >
-                      Confirma o <span className="font-bold">pagamento</span> da
-                      taxa de condomínio no valor de $
-                      {financeData.pendingPayment.toLocaleString()}?
-                    </DialogDescription>
-                  </DialogHeader>
-
-                  <DialogFooter>
-                    <div
-                      className={`flex w-full gap-2 justify-between ${
-                        isSmall ? "flex-col" : "flex-row"
-                      }`}
-                    >
-                      <div className="w-full">
-                        <DialogClose asChild>
-                          <Button
-                            variant="outline"
-                            className={`w-full font-semibold bg-[#28282b] text-white ${
-                              isSmall ? "h-[35px] text-xs" : "h-[40px] text-sm"
-                            }`}
-                          >
-                            Cancelar
-                          </Button>
-                        </DialogClose>
-                      </div>
-                      <div className="w-full">
-                        <DialogClose asChild>
-                          <Button
-                            onClick={() => handlePayment("regular")}
-                            className={`w-full font-semibold bg-[#FF204E] ${
-                              isSmall ? "h-[35px] text-xs" : "h-[40px] text-sm"
-                            }`}
-                          >
-                            Confirmar
-                          </Button>
-                        </DialogClose>
-                      </div>
-                    </div>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+              <button
+                onClick={() => handlePayment("regular")}
+                className={`bg-[#FF204E] hover:bg-[#FF204E]/80 text-white items-center rounded-lg font-semibold ${
+                  isSmall ? "px-4 py-2 h-[35px] text-xs" : "px-6 py-1 text-sm"
+                }`}
+              >
+                Pagar taxa
+              </button>
             </div>
           </div>
         </div>
