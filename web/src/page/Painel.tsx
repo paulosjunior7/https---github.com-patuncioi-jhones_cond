@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useVisibility } from "../providers/VisibilityProvider";
 import { useResponsive } from "../hooks/useResponsive";
 import type { TabType } from "../types";
@@ -70,8 +70,9 @@ const menus = [
 const Painel: React.FC = () => {
   const { loaderState } = useLoader();
   const { isSmall, isMedium } = useResponsive();
-  const { visiblePainel, setVisiblePainel } = useVisibility();
-  const [activeTab, setActiveTab] = useState<TabType>("dashboard");
+  const { visiblePainel, setVisiblePainel, lastActiveTab, setLastActiveTab } =
+    useVisibility();
+  const [activeTab, setActiveTab] = useState<TabType>(lastActiveTab);
 
   const handleClose = () => {
     setVisiblePainel(false);
@@ -79,7 +80,15 @@ const Painel: React.FC = () => {
 
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
+    setLastActiveTab(tab); // Salva a aba ativa no provider
   };
+
+  // Sincroniza a aba ativa quando o painel é aberto novamente
+  useEffect(() => {
+    if (visiblePainel && lastActiveTab !== activeTab) {
+      setActiveTab(lastActiveTab);
+    }
+  }, [visiblePainel, lastActiveTab, activeTab]);
 
   if (!visiblePainel) return null;
 

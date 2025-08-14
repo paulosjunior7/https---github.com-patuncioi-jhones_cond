@@ -26,7 +26,6 @@ export const useNuiEvent = <T = unknown>(
   handler: (data: T) => void
 ) => {
   const savedHandler: MutableRefObject<NuiHandlerSignature<T>> = useRef(noop);
-
   // Make sure we handle for a reactive handler
   useEffect(() => {
     savedHandler.current = handler;

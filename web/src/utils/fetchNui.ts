@@ -16,6 +16,14 @@ export async function fetchNui<T = unknown>(
   eventName: string,
   data?: unknown
 ): Promise<T> {
+  // Se estivermos no ambiente de desenvolvimento (browser), retorna uma promise vazia
+  if (isEnvBrowser()) {
+    console.log(`[DEV] fetchNui called: ${eventName}`, data);
+    return new Promise((resolve) => {
+      resolve({} as T);
+    });
+  }
+
   const options = {
     method: "post",
     headers: {
@@ -28,9 +36,12 @@ export async function fetchNui<T = unknown>(
     ? (window as any).GetParentResourceName()
     : "nui-frame-app";
 
-  const resp = await fetch(`https://${resourceName}/${eventName}`, options);
-
-  const respFormatted = await resp.json();
-
-  return respFormatted;
+  try {
+    const resp = await fetch(`https://${resourceName}/${eventName}`, options);
+    const respFormatted = await resp.json();
+    return respFormatted;
+  } catch (error) {
+    console.error(`[fetchNui] Error calling ${eventName}:`, error);
+    throw error;
+  }
 }
