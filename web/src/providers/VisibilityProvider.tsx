@@ -36,25 +36,21 @@ export const VisibilityProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     const keyHandler = (e: KeyboardEvent) => {
-      console.log("Key pressed:", e.code);
       if (e.code === "Backspace" || e.code === "Escape") {
         if (visibleContext && visibleContext?.title) {
           setVisibleContext(null);
           if (!isEnvBrowser()) {
             fetchNui("hideFrame");
-            console.log("hideframe");
           }
         } else if (visibleGarage) {
           setVisibleGarage(false);
           if (!isEnvBrowser()) {
             fetchNui("hideFrame");
-            console.log("hideframe");
           }
         } else if (visiblePainel) {
           setVisiblePainel(false);
           if (!isEnvBrowser()) {
             fetchNui("hideFrame");
-            console.log("hideframe");
           }
         }
       }
@@ -74,8 +70,6 @@ export const VisibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     if (anyPanelVisible) {
       setWasAnyPanelVisible(true);
     } else if (wasAnyPanelVisible && !anyPanelVisible) {
-      // Só chama hideFrame se algum painel estava visível antes
-      console.log("Todos os painéis foram fechados, chamando hideFrame");
       if (!isEnvBrowser()) {
         fetchNui("hideFrame");
       }

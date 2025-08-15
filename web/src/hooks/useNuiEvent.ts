@@ -42,8 +42,6 @@ export const useNuiEvent = <T = unknown>(
       }
     };
 
-    console.log("NUI Event Listener Registered:", action);
-
     window.addEventListener("message", eventListener);
     // Remove Event Listener on component cleanup
     return () => window.removeEventListener("message", eventListener);

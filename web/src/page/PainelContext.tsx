@@ -1,4 +1,3 @@
-import { ToastMessage } from "@/components/ToastMessage";
 import { useResponsive } from "@/hooks/useResponsive";
 import { useVisibility } from "@/providers/VisibilityProvider";
 import { fetchNui } from "@/utils/fetchNui";
@@ -8,7 +7,9 @@ import { toast } from "sonner";
 export interface MockResponseContexto {
   title: string;
   contextList: ContextListItem[];
+  onItemAction?: (index: string) => Promise<void>; // Função customizada simplificada
 }
+
 export interface ContextListItem {
   index: string;
   name: string;
@@ -38,23 +39,74 @@ const PainelContext = () => {
 
   const handleOpen = async (index: string) => {
     try {
+      // Se existe uma função customizada, usa ela
+      if (visibleContext?.onItemAction) {
+        await visibleContext.onItemAction(index);
+        return;
+      }
+
+      // Caso contrário, usa o comportamento padrão
       const response: Response = await fetchNui(
         "jhones_cond:sendIndexContext",
         {
-          index,
+          index: index,
         }
       );
 
+      console.log("Response:", JSON.stringify(response));
+
       if (response) {
         toast(
-          <ToastMessage
-            text={response.message}
-            type={response.success ? "success" : "error"}
-          />,
+          <div className="flex items-center gap-3 flex-row text-base font-semibold">
+            <div
+              className={`bg-[#FF204E] min-w-6 rounded-full size-6 flex items-center justify-center`}
+            >
+              {response.success ? (
+                <svg
+                  className="text-white size-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="text-white size-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              )}
+            </div>
+            <span className="text-white text-sm font-semibold">
+              {response.message}
+            </span>
+          </div>,
           {
+            position: "top-right",
             duration: 5000,
             style: {
-              display: "none",
+              background:
+                "linear-gradient(90deg, rgba(255, 32, 78, 0.15) 0%, rgba(255, 32, 78, 0.08) 30%, rgba(255, 32, 78, 0.02) 60%, rgba(255, 32, 78, 0) 100%), linear-gradient(0deg, rgba(34, 34, 37, 0.98), rgba(34, 34, 37, 0.98))",
+              color: "white",
+              borderRadius: "300px",
+              padding: "14px 18px",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.4)",
+              minWidth: "140px",
             },
           }
         );
@@ -65,13 +117,15 @@ const PainelContext = () => {
         setVisibleContext(null);
       }
     } catch (error) {
-      console.error("Erro ao retirar veículo:", error);
+      console.error("Erro ao executar ação:", error);
     }
   };
 
   useEffect(() => {
     loadContext();
   }, [visibleContext]);
+
+  console.log("Visible Context:", JSON.stringify(visibleContext?.contextList));
 
   return (
     <div className="flex gap-6 flex-col py-10 h-full z-[99999]">
@@ -85,7 +139,7 @@ const PainelContext = () => {
             isSmall ? "text-2xl" : isMedium ? "text-2xl" : "text-2xl"
           }`}
         >
-          Lista de lojas
+          {visibleContext?.title || "Não encontrado"}
         </p>
       </div>
 
@@ -99,9 +153,9 @@ const PainelContext = () => {
             {"Não há lojas disponíveis no momento."}
           </div>
         ) : (
-          visibleContext?.contextList?.map((context) => (
+          visibleContext?.contextList?.map((context, index) => (
             <div
-              key={context.title}
+              key={context.title + index}
               className={`border border-[#0505051a] bg-[#1e1e21] rounded-lg flex overflow-hidden ${
                 isSmall
                   ? "flex-col gap-4 items-center p-4"
@@ -132,9 +186,9 @@ const PainelContext = () => {
                       isSmall ? "text-base" : "text-lg"
                     }`}
                   >
-                    {context.name}
+                    {context.title}
                   </h3>
-                  <span className="text-gray-300">{context.title}</span>
+                  <span className="text-gray-300">{context.description}</span>
                 </div>
                 <div
                   className={`${
@@ -143,6 +197,10 @@ const PainelContext = () => {
                 >
                   <button
                     onClick={() => {
+                      console.log(
+                        "Abrindo contexto:",
+                        JSON.stringify(context.index)
+                      );
                       handleOpen(context.index);
                     }}
                     className={`bg-[#FF204E] hover:bg-[#FF204E]/80 font-semibold flex items-center text-white rounded-lg ${

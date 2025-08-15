@@ -1,29 +1,14 @@
-import { ToastMessage } from "@/components/ToastMessage";
-import { toast } from "sonner";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
 import { useResponsive } from "@/hooks/useResponsive";
 import { useEffect, useState } from "react";
 import { fetchNui } from "@/utils/fetchNui";
 import type { MockResponseContexto } from "./PainelContext";
 import { useVisibility } from "@/providers/VisibilityProvider";
-
+import { toast } from "sonner";
 interface PaymentHistory {
   title: string;
   date: string;
   value: number;
 }
-
 interface ResidenceFinanceData {
   pendingPayment: number;
   nextPayment: string;
@@ -44,7 +29,7 @@ export default function Taxas() {
   );
   const [loading, setLoading] = useState<boolean>(true);
   const { isSmall, isMedium } = useResponsive();
-  const { visibleContext, setVisibleContext } = useVisibility();
+  const { setVisibleContext } = useVisibility();
 
   const loadFinanceData = () => {
     setLoading(true);
@@ -65,40 +50,147 @@ export default function Taxas() {
 
   const handlePayment = async (type: "advance" | "regular") => {
     try {
-      let response: Response;
-
       if (type === "advance") {
-        // response = await fetchNui("jhones_cond:advancepayment", {
-        //   value: financeData?.pendingPayment || 0,
-        // });
-        setVisibleContext(financeData?.paymentsNextContext || null);
+        // Criar contexto customizado para pagamento antecipado
+        const advanceContext: MockResponseContexto = {
+          title:
+            financeData?.paymentsNextContext?.title || "Adiantar Pagamento",
+          contextList: financeData?.paymentsNextContext?.contextList || [],
+          onItemAction: async (index: string) => {
+            await handlePaymentAction(index, true);
+          },
+        };
+        setVisibleContext(advanceContext);
       } else {
-        // response = await fetchNui("jhones_cond:payResidence", {
-        //   value: financeData?.pendingPayment || 0,
-        // });
-        setVisibleContext(financeData?.paymentTaxContext || null);
+        // Criar contexto customizado para pagamento regular
+        const regularContext: MockResponseContexto = {
+          title: financeData?.paymentTaxContext?.title || "Pagar Taxa",
+          contextList: financeData?.paymentTaxContext?.contextList || [],
+          onItemAction: async (index: string) => {
+            await handlePaymentAction(index, false);
+          },
+        };
+        setVisibleContext(regularContext);
       }
-
-      // if (true) {
-      //   toast(
-      //     <ToastMessage
-      //       text={response.message}
-      //       type={response.success ? "success" : "error"}
-      //     />,
-      //     {
-      //       duration: 5000,
-      //       style: {
-      //         display: "none",
-      //       },
-      //     }
-      //   );
-      // }
-
-      // if (response.success) {
-      //   loadFinanceData();
-      // }
     } catch (error) {
       console.error("Erro ao processar pagamento:", error);
+    }
+  };
+
+  const handlePaymentAction = async (index: string, isAdvance: boolean) => {
+    try {
+      const endpoint = isAdvance
+        ? "jhones_cond:advancepay"
+        : "jhones_cond:payResidence";
+      const response: Response = await fetchNui(endpoint, {
+        index: index,
+      });
+
+      if (response) {
+        console.log(
+          `Resposta do pagamento ${isAdvance ? "antecipado" : "regular"}:`,
+          JSON.stringify(response)
+        );
+        // Criar o toast diretamente com Sonner
+        toast(
+          <div className="flex items-center gap-3 flex-row text-base font-semibold">
+            <div
+              className={`bg-[#FF204E] min-w-6 rounded-full size-6 flex items-center justify-center`}
+            >
+              {response.success ? (
+                <svg
+                  className="text-white size-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="text-white size-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              )}
+            </div>
+            <span className="text-white text-sm font-semibold">
+              {response.message}
+            </span>
+          </div>,
+          {
+            position: "top-right",
+            duration: 5000,
+            style: {
+              background:
+                "linear-gradient(90deg, rgba(255, 32, 78, 0.15) 0%, rgba(255, 32, 78, 0.08) 30%, rgba(255, 32, 78, 0.02) 60%, rgba(255, 32, 78, 0) 100%), linear-gradient(0deg, rgba(34, 34, 37, 0.98), rgba(34, 34, 37, 0.98))",
+              color: "white",
+              borderRadius: "300px",
+              padding: "14px 18px",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.4)",
+              minWidth: "140px",
+            },
+          }
+        );
+
+        // Se o pagamento foi bem-sucedido, recarrega os dados
+        if (response.success) {
+          loadFinanceData();
+          setVisibleContext(null); // Fecha o contexto
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao processar pagamento:", error);
+      toast(
+        <div className="flex items-center gap-3 flex-row text-base font-semibold">
+          <div className="bg-[#FF204E] min-w-6 rounded-full size-6 flex items-center justify-center">
+            <svg
+              className="text-white size-3"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={3}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </div>
+          <span className="text-white text-sm font-semibold">
+            Erro ao processar pagamento
+          </span>
+        </div>,
+        {
+          position: "top-right",
+          duration: 5000,
+          style: {
+            background:
+              "linear-gradient(90deg, rgba(255, 32, 78, 0.15) 0%, rgba(255, 32, 78, 0.08) 30%, rgba(255, 32, 78, 0.02) 60%, rgba(255, 32, 78, 0) 100%), linear-gradient(0deg, rgba(34, 34, 37, 0.98), rgba(34, 34, 37, 0.98))",
+            color: "white",
+            borderRadius: "300px",
+            padding: "14px 18px",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
+            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.4)",
+            minWidth: "140px",
+          },
+        }
+      );
     }
   };
 
